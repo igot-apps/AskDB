@@ -2,6 +2,3 @@ node_modules/
 dist/
 .env
 *.log
-web/dist/
-.netlify/
-.netlify-functions/

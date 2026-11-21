@@ -20,6 +20,4 @@ npm run dist     # build the Windows installer into dist/
 Optional: copy `.env.example` to `.env` to pre-fill your key and database link.
 
 ## Web version
-The same app also runs in a browser. Keys and database links stay in the browser; a small password-protected server does the database work.
-- **Netlify:** configured by `netlify.toml` (set `APP_PASSWORD` in Netlify's environment variables).
-- **Render / any Node host:** build `npm install && node web/build.js`, start `node web/server.mjs`, and set `APP_PASSWORD`.
+The browser version lives in a separate repo: [AskDB-web](https://github.com/igot-apps/AskDB-web).
