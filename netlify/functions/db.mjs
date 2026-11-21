@@ -1,5 +1,6 @@
 // AskDB web version: the only server part. Connects to the user's PostgreSQL database.
 // Database links are sent from the user's browser with each request and are never stored here.
+import '../lib/require-shim.mjs';
 import crypto from 'node:crypto';
 import db from '../../src/db.js';
 
