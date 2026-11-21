@@ -4,3 +4,4 @@ dist/
 *.log
 web/dist/
 .netlify/
+.netlify-functions/

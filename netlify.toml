@@ -4,10 +4,14 @@
   publish = "web/dist"
 
 [functions]
-  directory = "netlify/functions"
-  node_bundler = "esbuild"
-  # Bundle pg into the function; pg-native is an optional add-on we don't use.
-  external_node_modules = ["pg-native"]
+  # Pre-bundled by web/build.js (source: netlify/functions/db.mjs).
+  directory = ".netlify-functions"
+
+[[redirects]]
+  from = "/api/db"
+  to = "/.netlify/functions/db"
+  status = 200
+  force = true
 
 [build.environment]
   ELECTRON_SKIP_BINARY_DOWNLOAD = "1"

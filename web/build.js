@@ -28,3 +28,20 @@ replace('<meta charset="utf-8">', '<meta charset="utf-8">\n  <meta name="viewpor
 fs.writeFileSync(path.join(out, 'index.html'), html);
 
 console.log('Web version built into web/dist');
+
+// Bundle the server function into one self-contained file (pg included),
+// so Netlify has nothing left to resolve. The banner gives bundled CommonJS a real `require`.
+const fnOut = path.join(root, '.netlify-functions');
+fs.rmSync(fnOut, { recursive: true, force: true });
+require('esbuild').buildSync({
+  entryPoints: [path.join(root, 'netlify', 'functions', 'db.mjs')],
+  outfile: path.join(fnOut, 'db.mjs'),
+  bundle: true,
+  platform: 'node',
+  format: 'esm',
+  target: 'node20',
+  external: ['pg-native'],
+  banner: { js: "import { createRequire as __cr } from 'node:module'; const require = __cr(import.meta.url);" },
+  logLevel: 'warning',
+});
+console.log('Server function bundled into .netlify-functions/db.mjs');
