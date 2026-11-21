@@ -6,7 +6,8 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
-  external_node_modules = ["pg"]
+  # Bundle pg into the function; pg-native is an optional add-on we don't use.
+  external_node_modules = ["pg-native"]
 
 [build.environment]
   ELECTRON_SKIP_BINARY_DOWNLOAD = "1"

@@ -43,7 +43,8 @@
       setTimeout(() => location.reload(), 1500);
       return fail('Your AskDB password is no longer correct. Please enter it again.');
     }
-    return body || fail('The AskDB server had a problem. Please try again.');
+    if (!body || typeof body.ok !== 'boolean') return fail(`The AskDB server had a problem (code ${res.status}). Please try again in a minute.`);
+    return body;
   }
 
   let gate = null;
