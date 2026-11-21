@@ -284,6 +284,23 @@ async function applyChange(id) {
 
 function cancelChange(id) { proposals.delete(id); }
 
+// For the web version (stateless server): re-validate and run a change the user confirmed.
+async function applySql(sql) {
+  const p = requirePool();
+  sql = cleanSql(sql);
+  validateChange(sql);
+  const c = await p.connect();
+  try {
+    await c.query('begin');
+    const r = await c.query(sql);
+    await c.query('commit');
+    return { affected: r.rowCount, sql };
+  } catch (e) {
+    await c.query('rollback').catch(() => {});
+    throw e;
+  } finally { c.release(); }
+}
+
 // ---------- Friendly errors ----------
 
 function friendlyError(e) {
@@ -309,5 +326,5 @@ function friendlyError(e) {
 
 module.exports = {
   connect, disconnect, testConnection, getSchema, schemaToText,
-  runQuery, describeTable, proposeChange, applyChange, cancelChange, friendlyError,
+  runQuery, describeTable, proposeChange, applyChange, cancelChange, applySql, friendlyError,
 };
