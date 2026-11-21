@@ -55,11 +55,26 @@ function applyEnv() {
   if (!isPlaceholder(env.OPENROUTER_API_KEY) && env.OPENROUTER_API_KEY !== last.key) { s.apiKey = env.OPENROUTER_API_KEY; last.key = s.apiKey; changed = true; }
   if (!isPlaceholder(env.OPENROUTER_MODEL) && env.OPENROUTER_MODEL !== last.model) { s.model = env.OPENROUTER_MODEL; last.model = s.model; changed = true; }
   s.envApplied = last;
-  if (!isPlaceholder(env.DATABASE_URL) && !s.connections.some(c => c.cs === env.DATABASE_URL)) {
-    const name = isPlaceholder(env.DATABASE_NAME) ? 'My database' : env.DATABASE_NAME;
-    const conn = { id: `db_${Date.now()}`, name, cs: env.DATABASE_URL };
-    s.connections.push(conn);
-    s.activeId = conn.id;
+
+  // Database from .env: only act when the link changed since last time.
+  // An edited link updates the same saved database, so its read-only setting, name and history are kept.
+  const url = env.DATABASE_URL;
+  if (!isPlaceholder(url) && url !== last.dbUrl) {
+    const existing = s.connections.find(c => c.cs === url);
+    const previous = s.connections.find(c => c.id === last.dbId);
+    if (existing) {
+      last.dbId = existing.id;
+    } else if (previous) {
+      previous.cs = url;
+      last.dbId = previous.id;
+    } else {
+      const name = isPlaceholder(env.DATABASE_NAME) ? 'My database' : env.DATABASE_NAME;
+      const conn = { id: `db_${Date.now()}`, name, cs: url };
+      s.connections.push(conn);
+      if (!s.activeId) s.activeId = conn.id;
+      last.dbId = conn.id;
+    }
+    last.dbUrl = url;
     changed = true;
   }
   if (changed) writeSettings(s);
